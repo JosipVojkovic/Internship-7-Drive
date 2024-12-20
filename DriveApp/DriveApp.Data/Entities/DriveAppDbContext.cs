@@ -1,6 +1,8 @@
 ﻿using DriveApp.Data.Entities.Models;
 using DriveApp.Data.Seeds;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +68,27 @@ namespace DriveApp.Data.Entities
 
             DatabaseSeeder.Seed(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+    }
+
+    public class DriveAppDbContextFactory : IDesignTimeDbContextFactory<DriveAppDbContext>
+    {
+        public DriveAppDbContext CreateDbContext(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddXmlFile("App.config")
+                .Build();
+
+            config.Providers
+                .First()
+                .TryGet("connectionStrings:add:DriveApp:connectionString", out var connectionString);
+
+            var options = new DbContextOptionsBuilder<DriveAppDbContext>()
+                .UseNpgsql(connectionString)
+                .Options;
+
+            return new DriveAppDbContext(options);
         }
     }
 }

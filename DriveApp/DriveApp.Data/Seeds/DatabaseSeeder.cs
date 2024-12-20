@@ -198,19 +198,19 @@ namespace DriveApp.Data.Seeds
             builder.Entity<Comment>()
                 .HasData(new List<Comment>
                 {
-                    new Comment(1, 2, "Hello aswell!!", DateTime.Now.AddDays(-10))
+                    new Comment(1, 2, "Hello aswell!!", DateTime.UtcNow.AddDays(-10))
                     {
                         Id= 1
                     },
-                    new Comment(2, 2, "Nice project!", DateTime.Now.AddDays(-8))
+                    new Comment(2, 2, "Nice project!", DateTime.UtcNow.AddDays(-8))
                     {
                         Id= 2
                     },
-                    new Comment(2, 3, "Amazing project!", DateTime.Now.AddDays(-5))
+                    new Comment(2, 3, "Amazing project!", DateTime.UtcNow.AddDays(-5))
                     {
                         Id= 3
                     },
-                    new Comment(3, 1, "Really interesting diary!", DateTime.Now.AddDays(-7))
+                    new Comment(3, 1, "Really interesting diary!", DateTime.UtcNow.AddDays(-7))
                     {
                         Id= 4
                     }

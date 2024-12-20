@@ -13,7 +13,7 @@ namespace DriveApp.Data.Entities.Models
         {
             Name = name;
             ParentId = parentId;
-            LastChanged = DateTime.Now;
+            LastChanged = DateTime.UtcNow;
             OwnerId = ownerId;
         }
 
