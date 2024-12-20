@@ -31,27 +31,38 @@ namespace DriveApp.Data.Entities
             modelBuilder.Entity<Item>()
                 .HasOne(i => i.Owner)
                 .WithMany(u => u.Items)
-                .HasForeignKey(i => i.OwnerId);
+                .HasForeignKey(i => i.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             modelBuilder.Entity<SharedItem>()
                 .HasOne(si => si.Item)
                 .WithMany(i => i.SharedItems)
-                .HasForeignKey(si => si.ItemId);
+                .HasForeignKey(si => si.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<SharedItem>()
                 .HasOne(si => si.Owner)
                 .WithMany(u => u.SharedItems)
-                .HasForeignKey(si => si.OwnerId);
+                .HasForeignKey(si => si.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Owner)
                 .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserId);
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
-                .HasOne(c => c.Item)
+                .HasOne(c => c.SharedItem)
                 .WithMany(i => i.Comments)
-                .HasForeignKey(c => c.ItemId);
+                .HasForeignKey(c => c.SharedItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Folder>()
+                .HasMany(f => f.Items)
+                .WithOne()
+                .HasForeignKey(i => i.ParentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             DatabaseSeeder.Seed(modelBuilder);
             base.OnModelCreating(modelBuilder);

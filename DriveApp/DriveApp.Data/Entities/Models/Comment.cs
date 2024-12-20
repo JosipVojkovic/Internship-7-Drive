@@ -8,17 +8,18 @@ namespace DriveApp.Data.Entities.Models
 {
     public class Comment
     {
-        public Comment(int itemId, int userId, string content, DateTime createdAt) 
+        public Comment(int sharedItemId, int userId, string content, DateTime createdAt) 
         {
-            ItemId = itemId;
+            SharedItemId = sharedItemId;
             UserId = userId;
             Content = content;
             CreatedAt = createdAt;
         }
-        public int ItemId { get; set; }
-        public Item Item { get; set; }
+        public int Id { get; set; }
+        public int SharedItemId { get; set; }
+        public SharedItem? SharedItem { get; set; }
         public int UserId { get; set; }
-        public User Owner { get; set; }
+        public User? Owner { get; set; }
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
     }

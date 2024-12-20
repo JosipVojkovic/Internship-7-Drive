@@ -24,6 +24,5 @@ namespace DriveApp.Data.Entities.Models
         public int OwnerId { get; set; }
         public User? Owner { get; set; }
         public ICollection<SharedItem> SharedItems { get; set; } = new List<SharedItem>();
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

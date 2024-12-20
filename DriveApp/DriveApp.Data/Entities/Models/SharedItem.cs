@@ -17,9 +17,10 @@ namespace DriveApp.Data.Entities.Models
 
         public int Id { get; set; }
         public int ItemId { get; set; }
-        public Item Item { get; set; }
+        public Item? Item { get; set; }
         public int OwnerId { get; set; }
-        public User Owner { get; set; }
+        public User? Owner { get; set; }
         public int SharedUserId { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

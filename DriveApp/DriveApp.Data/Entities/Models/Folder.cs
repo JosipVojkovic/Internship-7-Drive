@@ -13,5 +13,6 @@ namespace DriveApp.Data.Entities.Models
         public Folder(string name, int? parentId, int ownerId) : base(name, parentId, ownerId)
         {
         }
+        public ICollection<Item> Items { get; set; } = new List<Item>();
     }
 }
