@@ -38,5 +38,24 @@ namespace DriveApp.Domain.Repositories
 
             return SaveChanges();
         }
+
+        public ResponseResultType Update(Folder folder, string newName)
+        {
+            folder.Name = newName;
+            folder.LastChanged = DateTime.UtcNow;
+
+            return SaveChanges();
+        }
+
+        public Folder? GetFolder(string name, int parentId, int ownerId)
+        {
+            return DbContext.Folders
+                .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
+        }
+
+        public ICollection<Folder> GetAllFolders(User user)
+        {
+            return DbContext.Folders.Where(f => f.ParentId == user.Id).ToList();
+        }
     }
 }
