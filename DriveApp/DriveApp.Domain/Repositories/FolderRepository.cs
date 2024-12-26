@@ -22,6 +22,7 @@ namespace DriveApp.Domain.Repositories
                 return ResponseResultType.AlreadyExists;
 
             var newFolder = new Folder(name, parentId, ownerId);
+            DbContext.Folders.Add(newFolder);
 
             return SaveChanges();
         }
@@ -53,9 +54,9 @@ namespace DriveApp.Domain.Repositories
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
         }
 
-        public ICollection<Folder> GetAllFolders(User user)
+        public ICollection<Folder> GetFolders(int userId, int parentId)
         {
-            return DbContext.Folders.Where(f => f.ParentId == user.Id).ToList();
+            return DbContext.Folders.Where(f => f.OwnerId == userId && f.ParentId == parentId).ToList();
         }
     }
 }

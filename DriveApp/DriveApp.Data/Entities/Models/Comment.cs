@@ -15,6 +15,13 @@ namespace DriveApp.Data.Entities.Models
             Content = content;
             CreatedAt = createdAt;
         }
+        public Comment(int sharedItemId, int userId, string content)
+        {
+            SharedItemId = sharedItemId;
+            UserId = userId;
+            Content = content;
+            CreatedAt = DateTime.UtcNow;
+        }
         public int Id { get; set; }
         public int SharedItemId { get; set; }
         public SharedItem? SharedItem { get; set; }

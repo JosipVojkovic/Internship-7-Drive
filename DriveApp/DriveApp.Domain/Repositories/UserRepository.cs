@@ -77,6 +77,12 @@ namespace DriveApp.Domain.Repositories
             return user;
         }
 
+        public User? GetUser(string email)
+        {
+            var user = DbContext.Users.FirstOrDefault(u => u.Email == email);
+            return user;
+        }
+
         public ICollection<User> GetAllUsers()
         {
             return DbContext.Users.ToList();
