@@ -1,2 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using DriveApp.Domain.Repositories;
+using DriveApp.Presentation.Actions;
+
+var actions = new MainMenuActions();
+
+actions.MainMenu();
