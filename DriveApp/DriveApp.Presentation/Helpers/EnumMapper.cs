@@ -9,15 +9,15 @@ namespace DriveApp.Presentation.Helpers
 {
     public static class EnumMapper
     {
-        public static TEnum MapEnum<TEnum>() where TEnum : Enum
+        public static TEnum MapEnum<TEnum>(Dictionary<TEnum, string> dictionary) where TEnum : Enum
         {
             TEnum selectedOption;
 
             while(true)
             {
-                foreach (var item in Enum.GetValues(typeof(TEnum)))
+                foreach (var item in dictionary)
                 {
-                    Console.WriteLine($"{(int)item} - {item}");
+                    Console.WriteLine($"{Convert.ToInt32(item.Key)} - {item.Value}");
                 }
 
                 Console.Write("\nOdaberite radnju: ");
@@ -26,7 +26,7 @@ namespace DriveApp.Presentation.Helpers
 
                 if (int.TryParse(entry, out int decision))
                 {
-                    if (Enum.IsDefined(typeof(StartMenu), decision))
+                    if (Enum.IsDefined(typeof(TEnum), decision))
                     {
                         selectedOption = (TEnum)Enum.ToObject(typeof(TEnum), decision);
                         return selectedOption;

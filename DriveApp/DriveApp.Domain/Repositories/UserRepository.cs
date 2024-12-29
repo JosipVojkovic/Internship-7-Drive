@@ -17,7 +17,7 @@ namespace DriveApp.Domain.Repositories
 
         public ResponseResultType Add(string email, string password, string firstName, string lastName)
         {
-            if(!DbContext.Users.Any(u => u.Email == email))
+            if(DbContext.Users.Any(u => u.Email == email))
                 return ResponseResultType.AlreadyExists;
 
             var newUser = new User(email, password, firstName, lastName);
@@ -80,6 +80,12 @@ namespace DriveApp.Domain.Repositories
         public User? GetUser(string email)
         {
             var user = DbContext.Users.FirstOrDefault(u => u.Email == email);
+            return user;
+        }
+
+        public User? GetById(int userId)
+        {
+            var user = DbContext.Users.FirstOrDefault(u => u.Id == userId);
             return user;
         }
 

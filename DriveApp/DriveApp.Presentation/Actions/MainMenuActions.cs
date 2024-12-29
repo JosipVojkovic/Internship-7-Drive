@@ -1,4 +1,5 @@
-﻿using DriveApp.Domain.Factories;
+﻿using DriveApp.Domain.Enums;
+using DriveApp.Domain.Factories;
 using DriveApp.Domain.Repositories;
 using DriveApp.Presentation.Enums;
 using DriveApp.Presentation.Helpers;
@@ -21,27 +22,33 @@ namespace DriveApp.Presentation.Actions
 
         public void MainMenu()
         {
-            var decision = EnumMapper.MapEnum<StartMenu>();
+            var menuOptions = new Dictionary<StartMenu, string>
+            {
+                { StartMenu.Login, "Prijava" },
+                { StartMenu.Registration, "Registracija" },
+                { StartMenu.Exit, "Izlaz" },
+            };
+            var decision = EnumMapper.MapEnum<StartMenu>(menuOptions);
 
             switch (decision) 
             {
-                case StartMenu.Prijava:
+                case StartMenu.Login:
                     Login();
                     return;
-                case StartMenu.Registracija:
+                case StartMenu.Registration:
                     Register();
                     return;
-                case StartMenu.Izlaz:
-                    // ExitApp();
+                case StartMenu.Exit:
+                    Console.Clear();
+                    Console.WriteLine("Hvala vam na koristenju Drive aplikacije!");
                     return;
             }
         }
 
         public void Login()
         {
-            Console.WriteLine("PRIJAVA\n");
-            Console.Write("Unesite svoj email ili 0 za natrag: ");
-            var email = Console.ReadLine();
+            var email = InputValidator
+                .GetValidInput(InputValidator.IsNotEmptyValidation, "PRIJAVA\n\nUnesite svoj email ili 0 za natrag: ");
 
             if (email == "0")
             {
@@ -50,8 +57,9 @@ namespace DriveApp.Presentation.Actions
                 return;
             }
 
-            Console.Write("Unesite svoju lozinku: ");
-            var password = Console.ReadLine();
+            Console.Clear();
+            var password = InputValidator
+                .GetValidInput(InputValidator.IsNotEmptyValidation, $"PRIJAVA\n\nEmail: {email}\nUnesite svoju lozinku: ");
 
             var user = _userRepository.GetUser(email, password);
 
@@ -70,34 +78,106 @@ namespace DriveApp.Presentation.Actions
                 return;
             }
 
+            Console.Clear();
+            UserMenu(user.Id);
+            return;
         }
 
         public void Register()
         {
-            Console.WriteLine("REGISTRACIJA\n");
-            Console.Write("Unesite svoj email: ");
-            var email = Console.ReadLine();
+            var email = InputValidator
+                .GetValidInput(InputValidator.EmailValidation, "REGISTRACIJA\n\nEmail: ");
+            Console.Clear();
 
-            Console.Write("Unesite svoju lozinku: ");
-            var password = Console.ReadLine();
+            var password = InputValidator
+                .GetValidInput(InputValidator.PasswordValidation,$"REGISTRACIJA\n\nLozinka (> 6 znakova): ");
+            Console.Clear();
 
-            Console.Write("Ponovno upisite lozinku: ");
-            var confirmPassword = Console.ReadLine();
+            string? confirmPassword;
+            do
+            {
+                Console.Write($"REGISTRACIJA\n\nPonovi lozinku: ");
+
+                confirmPassword = Console.ReadLine();
+                if (confirmPassword != password)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Lozinke se ne podudaraju. Pokusajte ponovno.\n");
+                }
+            }
+            while (confirmPassword != password);
+
+            Console.Clear();
+            var firstName = InputValidator
+                .GetValidInput(InputValidator.IsNotEmptyValidation,$"REGISTRACIJA\n\nIme: ");
+
+            Console.Clear();
+            var lastName = InputValidator
+                .GetValidInput(InputValidator.IsNotEmptyValidation,$"REGISTRACIJA\n\nPrezime: ");
 
             var captcha = EnumMapper.GenerateCaptcha();
-            Console.WriteLine($"\nKodna rijec: {captcha}\n");
-            Console.Write("Kopirajte kodnu rijec kako bismo znali da niste bot ili 0 za natrag: ");
-            var enteredCaptcha = Console.ReadLine();
+            Console.Clear();
 
-            if(enteredCaptcha == "0")
+            string? enteredCaptcha;
+            do
             {
-                Console.Clear();
-                MainMenu();
-                return;
+                Console.WriteLine($"REGISTRACIJA\n\nKodna rijec: {captcha}\n");
+                Console.Write("Kopirajte kodnu rijec kako bismo znali da niste bot ili 0 za natrag: ");
+
+                enteredCaptcha = Console.ReadLine();
+                if (enteredCaptcha != captcha)
+                {
+                    captcha = EnumMapper.GenerateCaptcha();
+                    Console.Clear();
+                    Console.WriteLine("Kodne rijeci se ne podudaraju. Pokusajte ponovno.\n");
+                }
             }
-            else if(enteredCaptcha != captcha)
+            while (enteredCaptcha != captcha && enteredCaptcha != "0");
+            Console.Clear();
+
+            if(enteredCaptcha == captcha)
             {
-                Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
+                var response = _userRepository.Add(email, password, firstName, lastName);
+                if (response == ResponseResultType.AlreadyExists)
+                    Console.WriteLine("Registracija neuspjesna. Korisnik sa tim emailom vec postoji.\n");
+                else
+                    Console.WriteLine("Korisnik uspjesno registriran.\n");
+            }
+
+            MainMenu();
+            return;
+        }
+
+        public void UserMenu(int userId)
+        {
+            var user = _userRepository.GetById(userId);
+            Console.WriteLine($"Dobrodosli {user?.FirstName} {user?.LastName}!\n");
+
+            var menuOptions = new Dictionary<UserMenu, string>
+            {
+                { Enums.UserMenu.MyDisc, "Moj disk" },
+                { Enums.UserMenu.SharedItems, "Dijeljeno sa mnom" },
+                { Enums.UserMenu.ProfileSettings, "Postavke profila" },
+                { Enums.UserMenu.Logout, "Odjava iz profila" }
+            };
+
+            var decision = EnumMapper.MapEnum<UserMenu>(menuOptions);
+
+            switch (decision)
+            {
+                case Enums.UserMenu.MyDisc:
+                    //MyDiscActions.MainMenu();
+                    return;
+                case Enums.UserMenu.SharedItems:
+                    //SharedItems.MainMenu();
+                    return;
+                case Enums.UserMenu.ProfileSettings:
+                    //ProfileSettings.MainMenu();
+                    return;
+                case Enums.UserMenu.Logout:
+                    MainMenu();
+                    return;
+                    
             }
         }
     }

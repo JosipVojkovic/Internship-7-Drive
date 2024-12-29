@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace DriveApp.Presentation.Enums
 {
-    public enum StartMenu
+    public enum UserMenu
     {
-        Login = 1,
-        Registration = 2,
-        Exit = 3
+        MyDisc = 1,
+        SharedItems = 2,
+        ProfileSettings = 3,
+        Logout = 4
     }
 }

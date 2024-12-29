@@ -54,9 +54,12 @@ namespace DriveApp.Domain.Repositories
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
         }
 
-        public ICollection<Folder> GetFolders(int userId, int parentId)
+        public ICollection<Folder> GetFolders(int userId, int? parentId)
         {
-            return DbContext.Folders.Where(f => f.OwnerId == userId && f.ParentId == parentId).ToList();
+            return DbContext.Folders
+                .Where(f => f.OwnerId == userId && f.ParentId == parentId)
+                .OrderBy(f => f.Name)
+                .ToList();
         }
     }
 }
