@@ -28,7 +28,7 @@ namespace DriveApp.Presentation.Actions
                 { StartMenu.Registration, "Registracija" },
                 { StartMenu.Exit, "Izlaz" },
             };
-            var decision = EnumMapper.MapEnum<StartMenu>(menuOptions);
+            var decision = EnumMapper.MapMenuOptions<StartMenu>(menuOptions);
 
             switch (decision) 
             {
@@ -161,12 +161,13 @@ namespace DriveApp.Presentation.Actions
                 { Enums.UserMenu.Logout, "Odjava iz profila" }
             };
 
-            var decision = EnumMapper.MapEnum<UserMenu>(menuOptions);
+            var decision = EnumMapper.MapMenuOptions<UserMenu>(menuOptions);
+            var myDiscActions = new MyDiscActions();
 
             switch (decision)
             {
                 case Enums.UserMenu.MyDisc:
-                    //MyDiscActions.MainMenu();
+                    myDiscActions.CurrentLocation(user.Id, null);
                     return;
                 case Enums.UserMenu.SharedItems:
                     //SharedItems.MainMenu();

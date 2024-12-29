@@ -9,7 +9,7 @@ namespace DriveApp.Presentation.Helpers
 {
     public static class EnumMapper
     {
-        public static TEnum MapEnum<TEnum>(Dictionary<TEnum, string> dictionary) where TEnum : Enum
+        public static TEnum MapMenuOptions<TEnum>(Dictionary<TEnum, string> dictionary) where TEnum : Enum
         {
             TEnum selectedOption;
 
@@ -42,6 +42,25 @@ namespace DriveApp.Presentation.Helpers
                 }
             }
             
+        }
+
+        public static bool MapCommands<TEnum>(Dictionary<TEnum, string> dictionary) where TEnum : Enum
+        {
+            string? goBack = "";
+
+            foreach (var item in dictionary)
+            {
+                Console.WriteLine($"{item.Value}");
+            }
+
+            Console.Write("\nUnesite 0 za natrag: ");
+            goBack = Console.ReadLine();
+            Console.Clear();
+
+            if (goBack != "0")
+                return false;
+
+            return true;
         }
 
         public static string GenerateCaptcha()

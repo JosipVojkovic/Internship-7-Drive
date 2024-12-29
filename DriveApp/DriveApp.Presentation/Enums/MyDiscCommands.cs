@@ -13,8 +13,10 @@ namespace DriveApp.Presentation.Enums
         CreateFile,
         EnterFolder,
         EditFile,
-        DeleteItem,
-        ChangeItemName,
+        DeleteFolder,
+        DeleteFile,
+        ChangeFolderName,
+        ChangeFileName,
         Back
     }
 }
