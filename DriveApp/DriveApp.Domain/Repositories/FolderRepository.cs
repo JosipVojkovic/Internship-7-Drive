@@ -16,7 +16,7 @@ namespace DriveApp.Domain.Repositories
         {
         }
 
-        public ResponseResultType Add(string name, int parentId, int ownerId)
+        public ResponseResultType Add(string name, int? parentId, int ownerId)
         {
             if (DbContext.Folders.Any(f => f.ParentId == parentId && f.Name == name && f.OwnerId == ownerId))
                 return ResponseResultType.AlreadyExists;
@@ -27,7 +27,7 @@ namespace DriveApp.Domain.Repositories
             return SaveChanges();
         }
 
-        public ResponseResultType Delete(string name, int parentId, int ownerId)
+        public ResponseResultType Delete(string name, int? parentId, int ownerId)
         {
             var folder = DbContext.Folders
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId); 
@@ -48,10 +48,16 @@ namespace DriveApp.Domain.Repositories
             return SaveChanges();
         }
 
-        public Folder? GetFolder(string name, int parentId, int ownerId)
+        public Folder? GetFolder(string name, int? parentId, int ownerId)
         {
             return DbContext.Folders
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
+        }
+
+        public Folder? GetById(int? id)
+        {
+            return DbContext.Folders
+                .FirstOrDefault(f => f.Id == id);
         }
 
         public ICollection<Folder> GetFolders(int userId, int? parentId)

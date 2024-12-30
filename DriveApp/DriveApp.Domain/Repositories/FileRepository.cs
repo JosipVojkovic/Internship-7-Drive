@@ -15,7 +15,7 @@ namespace DriveApp.Domain.Repositories
         {
         }
 
-        public ResponseResultType Add(string name, int parentId, int ownerId, string content)
+        public ResponseResultType Add(string name, int? parentId, int ownerId, string content)
         {
             if (DbContext.Files.Any(f => f.ParentId == parentId && f.Name == name && f.OwnerId == ownerId))
                 return ResponseResultType.AlreadyExists;
@@ -26,7 +26,7 @@ namespace DriveApp.Domain.Repositories
             return SaveChanges();
         }
 
-        public ResponseResultType Delete(string name, int parentId, int ownerId)
+        public ResponseResultType Delete(string name, int? parentId, int ownerId)
         {
             var file = DbContext.Files
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
@@ -55,7 +55,7 @@ namespace DriveApp.Domain.Repositories
             return SaveChanges();
         }
 
-        public Data.Entities.Models.File? GetFile(string name, int parentId, int ownerId)
+        public Data.Entities.Models.File? GetFile(string name, int? parentId, int ownerId)
         {
             return DbContext.Files
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);

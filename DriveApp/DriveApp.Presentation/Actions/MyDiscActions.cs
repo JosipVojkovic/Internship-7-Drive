@@ -16,16 +16,51 @@ namespace DriveApp.Presentation.Actions
         private readonly UserRepository _userRepository;
         private readonly FolderRepository _folderRepository;
         private readonly FileRepository _fileRepository;
-        private readonly ItemRepository _itemRepository;
 
         public MyDiscActions()
         {
             _userRepository = RepositoryFactory.Create<UserRepository>();
             _folderRepository = RepositoryFactory.Create<FolderRepository>();
             _fileRepository = RepositoryFactory.Create<FileRepository>();
-            _itemRepository = RepositoryFactory.Create<ItemRepository>();
         }
 
+        Dictionary<MyDiscCommands, (string, string)> Commands = new Dictionary<MyDiscCommands, (string, string)>
+        {
+            {MyDiscCommands.Help, ("pomoc", "ispis svih komandi")},
+            {MyDiscCommands.CreateFolder, ("stvori mapu 'ime mape'", "stvaranje mape na trenutnoj lokaciji")},
+            {MyDiscCommands.CreateFile, ("stvori datoteku 'ime datoteke'", "stvaranje datoteke na trenutnoj lokaciji")},
+            {MyDiscCommands.EnterFolder, ("udi u mapu 'ime mape'", "ulazak u mapu na trenutnoj lokaciji")},
+            {MyDiscCommands.EditFile, ("uredi datoteku 'ime datoteke'", "uredivanje datoteke na trenutnoj lokaciji")},
+            {
+                MyDiscCommands.DeleteFolder, 
+                (
+                    "izbrisi mapu 'ime mape'", 
+                    "brisanje mape na trenutnoj lokaciji"
+                )
+            },
+            {
+                MyDiscCommands.DeleteFile,
+                (
+                    "izbrisi datoteku 'ime datoteke'",
+                    "brisanje datoteke na trenutnoj lokaciji"
+                )
+            },
+            {
+                MyDiscCommands.ChangeFolderName, 
+                (
+                    "promijeni ime mape 'ime mape' u 'novo ime mape'", 
+                    "mijenjanje naziva mape na trenutnoj lokaciji"
+                )
+            },
+            {
+                MyDiscCommands.ChangeFileName,
+                (
+                    "promijeni ime datoteke 'ime datoteke' u 'novo ime datoteke'",
+                    "mijenjanje naziva datoteke na trenutnoj lokaciji"
+                )
+            },
+            {MyDiscCommands.Back, ("povratak", "povratak na prijasnji korak")}
+        };
         public void CurrentLocation(int userId, int? parentId)
         {
             var user = _userRepository.GetById(userId);
@@ -33,92 +68,245 @@ namespace DriveApp.Presentation.Actions
             var files = _fileRepository.GetFiles(userId, parentId);
             Console.WriteLine($"{user.FirstName} {user.LastName} => MOJ DISK\n");
 
-            Console.WriteLine("Mape:");
-            foreach (var folder in folders)
-            {
-                Console.WriteLine("  - " + folder.Name);
+            
+            if(folders.Count > 0)
+            {   
+                Console.WriteLine("Mape:");
+
+                foreach (var folder in folders)
+                {
+                    Console.WriteLine("  - " + folder.Name);
+                }
             }
-            Console.WriteLine("Datoteke:");
-            foreach (var file in files)
+            else
+                Console.WriteLine("Mape: nema mapa");
+            
+            if(files.Count > 0)
             {
-                Console.WriteLine("  - " + file.Name);
+                Console.WriteLine("Datoteke:");
+
+                foreach (var file in files)
+                {
+                    Console.WriteLine("  - " + file.Name);
+                }
             }
+            else
+                Console.WriteLine("Datoteke: nema datoteka");
+
 
             Console.Write("\nUnesite komandu ('pomoc' za ispis svih komandi): ");
-            var command = Console.ReadLine();
-
-            switch (command)
-            {
-                case "pomoc":
-                    Console.Clear();
-                    Help(userId, parentId, "Moj disk");
-                    return;
-                case "":
-                    Console.Clear();
-                    Console.WriteLine("Unos ne smije biti prazan. Pokusajte ponovno.\n");
-                    CurrentLocation(userId, parentId);
-                    return;
-                default:
-                    Console.Clear();
-                    Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
-                    CurrentLocation(userId, parentId);
-                    return;
-            }
-
-        }
-
-        public void Help(int userId, int? parentId, string menuOption)
-        {
-            Console.WriteLine($"{menuOption} komande:");
-            var commands = new Dictionary<MyDiscCommands, string>
-            {
-                { MyDiscCommands.Help, "    pomoc => ispis svih komandi" },
-                { MyDiscCommands.CreateFolder, "    stvori mapu 'ime mape' => stvaranje mape na trenutnoj lokaciji" },
-                { MyDiscCommands.CreateFile, "    stvori datoteku 'ime datoteke' => " + 
-                                               "stvaranje datoteke na trenutnoj lokaciji" },
-                { MyDiscCommands.EnterFolder, "    udi u mapu 'ime mape' => ulazak u mapu" },
-                { MyDiscCommands.EditFile, "    uredi datoteku 'ime datoteke' => uredivanje datoteke" },
-                { MyDiscCommands.DeleteFolder, "    izbrisi mapu 'ime mape' => brisanje mape" },
-                { MyDiscCommands.DeleteFile, "    izbrisi datoteku 'ime datoteke' => brisanje datoteke" },
-                { MyDiscCommands.ChangeFolderName, "    promjeni naziv mape 'ime mape' u 'novo ime mape' => " +
-                                                    "mijenjanje naziva mape" },
-                { MyDiscCommands.ChangeFileName, "    promjeni naziv datoteke 'ime datoteke' u 'novo ime datoteke' => " +
-                                                    "mijenjanje naziva datoteke" },
-                { MyDiscCommands.Back, "    povratak => povratak na prijasnji korak" }
-            };
-
-            var isValid = EnumMapper.MapCommands<MyDiscCommands>(commands);
+            var commandInput = Console.ReadLine();
+            var command = CommandsValidator.ValidateCommand(Commands, commandInput);
             Console.Clear();
 
-            if (!isValid)
+            if (command is null)
             {
-                
-                Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
-                Help(userId, parentId, menuOption);
+                Console.WriteLine("Pogresan unos komande. Pokusajte ponovno.\n");
+                CurrentLocation(userId, parentId);
                 return;
             }
+
+            switch (command.Value.Key)
+            {
+                case MyDiscCommands.Help:
+                    Help(userId, parentId);
+                    break;
+                case MyDiscCommands.CreateFolder:
+                    CreateFolder(userId, parentId, command.Value.Value[0]);
+                    break;
+                case MyDiscCommands.CreateFile:
+                    CreateFile(userId, parentId, command.Value.Value[0]);
+                    break;
+                case MyDiscCommands.EnterFolder:
+                    EnterFolder(userId, parentId, command.Value.Value[0]);
+                    return;
+                case MyDiscCommands.EditFile:
+                    EditFile(userId, parentId, command.Value.Value[0]);
+                    break;
+                case MyDiscCommands.DeleteFolder:
+                    DeleteFolder(userId, parentId, command.Value.Value[0]);
+                    break;
+                case MyDiscCommands.DeleteFile:
+                    DeleteFile(userId, parentId, command.Value.Value[0]);
+                    break;
+                case MyDiscCommands.ChangeFolderName:
+                    ChangeFolderName(userId, parentId, command.Value.Value[0], command.Value.Value[1]);
+                    break;
+                case MyDiscCommands.ChangeFileName:
+                    ChangeFileName(userId, parentId, command.Value.Value[0], command.Value.Value[1]);
+                    break;
+                case MyDiscCommands.Back:
+                    Back(userId, parentId);
+                    return;
+            }
+
             CurrentLocation(userId, parentId);
             return;
         }
 
-        public void CreateMap(int userId, int parentId, string command)
+        public void Help(int userId, int? parentId)
         {
-            string prefix = "stvori mapu ";
-            string folderName = command.Substring(prefix.Length);
+            Console.WriteLine($"Moj disk komande (ne ukljucujuci :):");
 
-            var resposne = _folderRepository.Add(folderName, parentId, userId);
+            var isValid = EnumMapper.MapCommands<MyDiscCommands>(Commands);
             Console.Clear();
 
-            if (resposne == ResponseResultType.AlreadyExists)
+            if (!isValid)
             {
-                Console.WriteLine("Greska, mapa s istim imenom već postoji u trenutnom direktoriju.\n");
+                Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
+                Help(userId, parentId);
+                return;
             }
+            return;
+        }
+
+        public void CreateFolder(int userId, int? parentId, string name)
+        {
+            var response = _folderRepository.Add(name, parentId, userId);
+
+            if (response == ResponseResultType.AlreadyExists)
+                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom vec postoji.\n");
             else
+                Console.WriteLine($"Mapa {name} uspjesno kreirana!\n");
+
+            return;
+        }
+
+        public void CreateFile(int userId, int? parentId, string name)
+        {
+            Console.Write("Unesite sadrzaj datoteke: ");
+            var content = Console.ReadLine();
+
+            if (content is null)
+                content = "";
+
+            var response = _fileRepository.Add(name, parentId, userId, content);
+            Console.Clear();
+
+            if (response == ResponseResultType.AlreadyExists)
+                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom vec postoji.\n");
+            else
+                Console.WriteLine($"Datoteka {name} uspjesno kreirana!\n");
+
+            return;
+        }
+
+        public void EnterFolder(int userId, int? parentId, string name)
+        {
+            var newFolder = _folderRepository.GetFolder(name, parentId, userId);
+
+            if (newFolder is null)
             {
-                Console.WriteLine($"Mapa {folderName} uspjesno kreirana.\n");
+                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji na trenutnoj lokaciji.\n");
+                CurrentLocation(userId, parentId);
+            }
+                
+            else
+                CurrentLocation(userId, newFolder.Id);
+
+            return;
+        }
+
+        public void EditFile(int userId, int? parentId, string name)
+        {
+            var file = _fileRepository.GetFile(name, parentId, userId);
+
+            if (file is null)
+            {
+                Console.WriteLine("Operacija neuspjesna. Dateoteka sa tim imenom ne postoji na trenutnoj lokaciji.\n");
+                return;
             }
 
-            CurrentLocation(userId, parentId);
+            Console.WriteLine($"Ime datoteke: {file.Name}\n\nSadrzaj datoteke: {file.Content}\n");
+
+            Console.Write("Unesite novi sadrzaj datoteke: ");
+            var content = Console.ReadLine();
+
+            if (content is null)
+                content = "";
+
+            var response = _fileRepository.UpdateContent(file, content);
+            Console.Clear();
+            Console.WriteLine($"Datoteka {name} uspjesno uredena!\n");
+
+            return;
+        }
+
+        public void DeleteFolder(int userId, int? parentId, string name)
+        {
+            var response = _folderRepository.Delete(name, parentId, userId);
+
+            if (response == ResponseResultType.NotFound)
+                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji.\n");
+            else
+                Console.WriteLine($"Mapa {name} uspjesno obrisana!\n");
+
+            return;
+        }
+
+        public void DeleteFile(int userId, int? parentId, string name)
+        {
+            var response = _fileRepository.Delete(name, parentId, userId);
+
+            if (response == ResponseResultType.NotFound)
+                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom ne postoji.\n");
+            else
+                Console.WriteLine($"Datoteka {name} uspjesno obrisana!\n");
+
+            return;
+        }
+
+        public void ChangeFolderName(int userId, int? parentId, string name, string newName)
+        {
+            var folder = _folderRepository.GetFolder(name, parentId, userId);
+
+            if(folder is null)
+            {
+                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji.\n");
+                return;
+            }
+
+            _folderRepository.Update(folder, newName);
+            Console.WriteLine($"Ime mape {name} uspjesno promijenjeno u novo ime {newName}!\n");
+            return;
+        }
+
+        public void ChangeFileName(int userId, int? parentId, string name, string newName)
+        {
+            var file = _fileRepository.GetFile(name, parentId, userId);
+
+            if (file is null)
+            {
+                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom ne postoji.\n");
+                return;
+            }
+
+            _fileRepository.Update(file, newName);
+            Console.WriteLine($"Ime datoteke {name} uspjesno promijenjeno u novo ime {newName}!\n");
+            return;
+        }
+
+        public void Back(int userId, int? parentId)
+        {
+            var mainMenuActions = new MainMenuActions();
+            Console.Clear();
+
+            if (parentId is null)
+            {
+                mainMenuActions.UserMenu(userId);
+                return;
+            }
+
+            var folder = _folderRepository.GetById(parentId);
+
+            if (folder is null)
+            {
+                Console.WriteLine("Dogodila se greska. Pokusajte ponovno.\n");
+                mainMenuActions.UserMenu(userId);
+                return;
+            }
+
+            CurrentLocation(userId, folder.ParentId);
             return;
         }
     }

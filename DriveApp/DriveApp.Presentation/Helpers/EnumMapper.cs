@@ -44,13 +44,14 @@ namespace DriveApp.Presentation.Helpers
             
         }
 
-        public static bool MapCommands<TEnum>(Dictionary<TEnum, string> dictionary) where TEnum : Enum
+        public static bool MapCommands<TEnum>(Dictionary<TEnum, (string, string)> dictionary) where TEnum : Enum
         {
             string? goBack = "";
 
             foreach (var item in dictionary)
             {
-                Console.WriteLine($"{item.Value}");
+                Console.WriteLine($"  {item.Value.Item1}:");
+                Console.WriteLine($"    - {item.Value.Item2}\n");
             }
 
             Console.Write("\nUnesite 0 za natrag: ");
