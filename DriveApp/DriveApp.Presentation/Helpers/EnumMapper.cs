@@ -81,5 +81,80 @@ namespace DriveApp.Presentation.Helpers
 
             return shuffledCaptcha;
         }
+
+        public static bool ConfirmDialog()
+        {
+            var decision = "";
+            Console.Clear();
+
+            while(decision != "y" && decision != "n")
+            {
+                Console.Write("Jeste li sigurni? (y/n): ");
+                decision = Console.ReadLine();
+
+                if (decision != "y" && decision != "n")
+                {
+                    Console.Clear();
+                    Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
+                }   
+            }
+
+            Console.Clear();
+            return decision == "y";    
+        }
+
+        public static (TEnum, string) MultiLineInput<TEnum>(Dictionary<TEnum, (string, string)> commands, string fileName) where TEnum : Enum
+        {
+            List<string> lines = new List<string>();
+            StringBuilder currentLine = new StringBuilder();
+
+            int currentLineIndex = 0;
+
+            while(true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Unesite novi sadrzaj datoteke {fileName}:\n");
+
+                foreach(var line in lines)
+                {
+                    Console.WriteLine(line);
+                }
+
+                Console.Write(currentLine.ToString());
+                var keyInfo = Console.ReadKey(intercept: true);
+
+                if(commands.Values.Any(t => t.Item1 == currentLine.ToString()))
+                {
+                    var command = commands.FirstOrDefault(kvp => kvp.Value.Item1 == currentLine.ToString()).Key;
+                    return (command, string.Join("\n", lines));
+                }
+                if(keyInfo.Key == ConsoleKey.Enter)
+                {
+                    lines.Add(currentLine.ToString());
+                    currentLine.Clear();
+                    currentLineIndex++;
+                }
+                else if (keyInfo.Key == ConsoleKey.Backspace)
+                {
+                    if(currentLine.Length == 0 && currentLineIndex > 0)
+                    {
+                        currentLine = new StringBuilder(lines[currentLineIndex - 1]);
+                        lines.RemoveAt(currentLineIndex - 1);
+                        currentLineIndex--;
+                    }
+                    else if (currentLine.Length > 0)
+                    {
+                        currentLine.Remove(currentLine.Length - 1, 1);
+                    }
+                }
+                else
+                {
+                    if (keyInfo.KeyChar != 0)
+                    {
+                        currentLine.Append(keyInfo.KeyChar);
+                    }
+                }
+            }
+        }
     }
 }

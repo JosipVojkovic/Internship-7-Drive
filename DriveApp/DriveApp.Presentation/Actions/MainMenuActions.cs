@@ -68,7 +68,7 @@ namespace DriveApp.Presentation.Actions
                 for (int i = 30; i >= 0; i--)
                 {
                     Console.Clear();
-                    Console.WriteLine("Ne postoji korisnik sa ovim podatcima.\n");
+                    Console.WriteLine("Ne postoji korisnik sa ovim korisnickim podatcima.\n");
                     Console.WriteLine($"Molimo vas, pricekajte {i}s da provjerimo da niste bot...");
                     Task.Delay(1000).Wait();
                 }

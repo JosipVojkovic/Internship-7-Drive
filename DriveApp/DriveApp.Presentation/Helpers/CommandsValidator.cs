@@ -11,12 +11,11 @@ namespace DriveApp.Presentation.Helpers
 {
     public static class CommandsValidator
     {
-        public static bool HelpValidation(string input)
-        {
-            return input == "pomoc";
-        }
 
-        public static KeyValuePair<MyDiscCommands, List<string>>? ValidateCommand(Dictionary<MyDiscCommands, (string, string)> commands, string commandInput)
+        public static KeyValuePair<TEnum, List<string>>? ValidateCommand<TEnum>(
+            Dictionary<TEnum, (string, string)> commands,
+            string commandInput
+        ) where TEnum : Enum
         {
             foreach (var command in commands)
             {
@@ -50,7 +49,7 @@ namespace DriveApp.Presentation.Helpers
                         valuesInsideQuotes.Add(groupValue);
                     }
 
-                    return new KeyValuePair<MyDiscCommands, List<string>>(command.Key, valuesInsideQuotes);
+                    return new KeyValuePair<TEnum, List<string>>(command.Key, valuesInsideQuotes);
                 }
             }
 

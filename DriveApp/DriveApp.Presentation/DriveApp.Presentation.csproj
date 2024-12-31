@@ -18,8 +18,4 @@
     <ProjectReference Include="..\DriveApp.Domain\DriveApp.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\CommandsValidator\" />
-  </ItemGroup>
-
 </Project>

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace DriveApp.Presentation.Actions
 {
@@ -162,12 +163,17 @@ namespace DriveApp.Presentation.Actions
 
         public void CreateFolder(int userId, int? parentId, string name)
         {
-            var response = _folderRepository.Add(name, parentId, userId);
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if (response == ResponseResultType.AlreadyExists)
-                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom vec postoji.\n");
-            else
-                Console.WriteLine($"Mapa {name} uspjesno kreirana!\n");
+            if (actionConfirmation)
+            {
+                var response = _folderRepository.Add(name, parentId, userId);
+
+                if (response == ResponseResultType.AlreadyExists)
+                    Console.WriteLine($"Operacija neuspjesna. Mapa {name} vec postoji.\n");
+                else
+                    Console.WriteLine($"Mapa {name} uspjesno kreirana!\n");
+            }
 
             return;
         }
@@ -180,13 +186,18 @@ namespace DriveApp.Presentation.Actions
             if (content is null)
                 content = "";
 
-            var response = _fileRepository.Add(name, parentId, userId, content);
-            Console.Clear();
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if (response == ResponseResultType.AlreadyExists)
-                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom vec postoji.\n");
-            else
-                Console.WriteLine($"Datoteka {name} uspjesno kreirana!\n");
+            if (actionConfirmation)
+            {
+                var response = _fileRepository.Add(name, parentId, userId, content);
+                Console.Clear();
+
+                if (response == ResponseResultType.AlreadyExists)
+                    Console.WriteLine($"Operacija neuspjesna. Datoteka {name} vec postoji.\n");
+                else
+                    Console.WriteLine($"Datoteka {name} uspjesno kreirana!\n");
+            }    
 
             return;
         }
@@ -197,7 +208,7 @@ namespace DriveApp.Presentation.Actions
 
             if (newFolder is null)
             {
-                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji na trenutnoj lokaciji.\n");
+                Console.WriteLine($"Operacija neuspjesna. Mapa {name} ne postoji na trenutnoj lokaciji.\n");
                 CurrentLocation(userId, parentId);
             }
                 
@@ -213,76 +224,122 @@ namespace DriveApp.Presentation.Actions
 
             if (file is null)
             {
-                Console.WriteLine("Operacija neuspjesna. Dateoteka sa tim imenom ne postoji na trenutnoj lokaciji.\n");
+                Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji na trenutnoj lokaciji.\n");
                 return;
             }
 
-            Console.WriteLine($"Ime datoteke: {file.Name}\n\nSadrzaj datoteke: {file.Content}\n");
+            Console.WriteLine($"Ime datoteke: {file.Name}\n\nSadrzaj datoteke:\n{file.Content}\n");
 
-            Console.Write("Unesite novi sadrzaj datoteke: ");
-            var content = Console.ReadLine();
-
-            if (content is null)
-                content = "";
-
-            var response = _fileRepository.UpdateContent(file, content);
+            var updateFileActions = new UpdateFileActions();
+            var command = EnumMapper.MultiLineInput(updateFileActions.Commands, name);
             Console.Clear();
-            Console.WriteLine($"Datoteka {name} uspjesno uredena!\n");
 
+            switch (command.Item1)
+            {
+                case UpdateFileCommands.Help:
+                    updateFileActions.Help(userId, parentId);
+                    EnumMapper.MultiLineInput(updateFileActions.Commands, name);
+                    return;
+                case UpdateFileCommands.Save:
+                    _fileRepository.UpdateContent(file, command.Item2);
+                    Console.WriteLine($"Datoteka {name} uspjesno uredena!\n");
+                    break;
+            }
+
+            CurrentLocation(userId, parentId);
             return;
         }
 
         public void DeleteFolder(int userId, int? parentId, string name)
         {
-            var response = _folderRepository.Delete(name, parentId, userId);
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if (response == ResponseResultType.NotFound)
-                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji.\n");
-            else
-                Console.WriteLine($"Mapa {name} uspjesno obrisana!\n");
+            if (actionConfirmation)
+            {
+                var response = _folderRepository.Delete(name, parentId, userId);
+
+                if (response == ResponseResultType.NotFound)
+                    Console.WriteLine($"Operacija neuspjesna. Mapa {name} ne postoji.\n");
+                else
+                    Console.WriteLine($"Mapa {name} uspjesno obrisana!\n");
+            }
 
             return;
         }
 
         public void DeleteFile(int userId, int? parentId, string name)
         {
-            var response = _fileRepository.Delete(name, parentId, userId);
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if (response == ResponseResultType.NotFound)
-                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom ne postoji.\n");
-            else
-                Console.WriteLine($"Datoteka {name} uspjesno obrisana!\n");
+            if (actionConfirmation)
+            {
+                var response = _fileRepository.Delete(name, parentId, userId);
+
+                if (response == ResponseResultType.NotFound)
+                    Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji.\n");
+                else
+                    Console.WriteLine($"Datoteka {name} uspjesno obrisana!\n");
+            }
 
             return;
         }
 
         public void ChangeFolderName(int userId, int? parentId, string name, string newName)
         {
-            var folder = _folderRepository.GetFolder(name, parentId, userId);
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if(folder is null)
+            if (actionConfirmation)
             {
-                Console.WriteLine("Operacija neuspjesna. Mapa sa tim imenom ne postoji.\n");
-                return;
-            }
+                var folder = _folderRepository.GetFolder(name, parentId, userId);
 
-            _folderRepository.Update(folder, newName);
-            Console.WriteLine($"Ime mape {name} uspjesno promijenjeno u novo ime {newName}!\n");
+                if(folder is null)
+                {
+                    Console.WriteLine($"Operacija neuspjesna. Mapa {name} ne postoji.\n");
+                    return;
+                }
+
+                var isNameTaken = _folderRepository.GetFolder(newName, parentId, userId);
+
+                if (isNameTaken is not null)
+                {
+                   Console.WriteLine($"Operacija neuspjesna. Mapa {newName} vec postoji.\n");
+                    return;
+                }
+ 
+
+                _folderRepository.Update(folder, newName);
+                Console.WriteLine($"Ime mape {name} uspjesno promijenjeno u novo ime {newName}!\n");
+            }
+                    
             return;
         }
 
         public void ChangeFileName(int userId, int? parentId, string name, string newName)
         {
-            var file = _fileRepository.GetFile(name, parentId, userId);
+            var actionConfirmation = EnumMapper.ConfirmDialog();
 
-            if (file is null)
-            {
-                Console.WriteLine("Operacija neuspjesna. Datoteka sa tim imenom ne postoji.\n");
-                return;
+            if (actionConfirmation) 
+            { 
+                var file = _fileRepository.GetFile(name, parentId, userId);
+
+                if (file is null)
+                {
+                    Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji.\n");
+                    return;
+                }
+
+                var isNameTaken = _fileRepository.GetFile(newName, parentId, userId);
+
+                if (isNameTaken is not null)
+                {
+                    Console.WriteLine($"Operacija neuspjesna. Datoteka {newName} vec postoji.\n");
+                    return;
+                }
+
+               _fileRepository.Update(file, newName);
+                Console.WriteLine($"Ime datoteke {name} uspjesno promijenjeno u novo ime {newName}!\n");
             }
-
-            _fileRepository.Update(file, newName);
-            Console.WriteLine($"Ime datoteke {name} uspjesno promijenjeno u novo ime {newName}!\n");
+ 
             return;
         }
 
