@@ -125,6 +125,7 @@ namespace DriveApp.Presentation.Helpers
 
                 if(commands.Values.Any(t => t.Item1 == currentLine.ToString()))
                 {
+                    Console.Clear();
                     var command = commands.FirstOrDefault(kvp => kvp.Value.Item1 == currentLine.ToString()).Key;
                     return (command, string.Join("\n", lines));
                 }

@@ -79,6 +79,7 @@ namespace DriveApp.Presentation.Actions
             }
 
             Console.Clear();
+            Console.WriteLine($"Dobrodosli {user?.FirstName} {user?.LastName}!\n");
             UserMenu(user.Id);
             return;
         }
@@ -151,7 +152,7 @@ namespace DriveApp.Presentation.Actions
         public void UserMenu(int userId)
         {
             var user = _userRepository.GetById(userId);
-            Console.WriteLine($"Dobrodosli {user?.FirstName} {user?.LastName}!\n");
+            Console.WriteLine($"Korisnik: {user.FirstName} {user.LastName}\n");
 
             var menuOptions = new Dictionary<UserMenu, string>
             {
@@ -162,23 +163,24 @@ namespace DriveApp.Presentation.Actions
             };
 
             var decision = EnumMapper.MapMenuOptions<UserMenu>(menuOptions);
-            var myDiscActions = new MyDiscActions();
 
             switch (decision)
             {
                 case Enums.UserMenu.MyDisc:
-                    myDiscActions.CurrentLocation(user.Id, null);
+                    var myDiscActions = new MyDiscActions();
+                    myDiscActions.CurrentLocation(userId, null);
                     return;
                 case Enums.UserMenu.SharedItems:
-                    //SharedItems.MainMenu();
+                    var sharedItemsActions = new SharedItemsActions();
+                    sharedItemsActions.CurrentLocation(userId, null);
                     return;
                 case Enums.UserMenu.ProfileSettings:
-                    //ProfileSettings.MainMenu();
+                    var profileSettingsActions = new ProfileSettingsActions();
+                    profileSettingsActions.MainMenu(userId);
                     return;
                 case Enums.UserMenu.Logout:
                     MainMenu();
-                    return;
-                    
+                    return;        
             }
         }
     }

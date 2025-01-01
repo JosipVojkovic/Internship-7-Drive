@@ -55,6 +55,30 @@ namespace DriveApp.Domain.Repositories
             return SaveChanges();
         }
 
+        public ICollection<Folder> GetSharedFolders(int sharedUserId)
+        {
+            var sharedItems = DbContext.SharedItems
+                .Where(si => si.SharedUserId == sharedUserId);
+            var sharedFolders = DbContext.Folders
+                .Where(f => sharedItems.Any(si => si.ItemId == f.Id))
+                .OrderBy(sf => sf.Name)
+                .ToList();
+
+            return sharedFolders;
+        }
+
+        public ICollection<Data.Entities.Models.File> GetSharedFiles(int sharedUserId)
+        {
+            var sharedItems = DbContext.SharedItems
+                .Where(si => si.SharedUserId == sharedUserId);
+            var sharedFiles = DbContext.Files
+                .Where(f => sharedItems.Any(si => si.ItemId == f.Id))
+                .OrderBy(sf => sf.Name)
+                .ToList();
+
+            return sharedFiles;
+        }
+
     }
 
 }

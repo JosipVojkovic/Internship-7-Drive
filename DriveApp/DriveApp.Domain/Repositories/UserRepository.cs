@@ -42,10 +42,13 @@ namespace DriveApp.Domain.Repositories
         public ResponseResultType Update(int id, string newEmail)
         {
             var user = DbContext.Users.Find(id);
+            var checkUser = DbContext.Users.FirstOrDefault(u => u.Email == newEmail);
 
             if (user is null)
                 return ResponseResultType.NotFound;
             if(user.Email == newEmail)
+                return ResponseResultType.ValidationError;
+            if (checkUser is not null)
                 return ResponseResultType.AlreadyExists;
 
             user.Email = newEmail;

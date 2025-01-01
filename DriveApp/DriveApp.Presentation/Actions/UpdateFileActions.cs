@@ -28,7 +28,7 @@ namespace DriveApp.Presentation.Actions
 
         public void Help(int userId, int? parentId)
         {
-            Console.WriteLine($"Uredivanje datoteke komande (ne ukljucujuci :):");
+            Console.WriteLine($"Uredivanje datoteke komande (ne ukljucujuci : na kraju komande):");
 
             var isValid = EnumMapper.MapCommands<UpdateFileCommands>(Commands);
             Console.Clear();
