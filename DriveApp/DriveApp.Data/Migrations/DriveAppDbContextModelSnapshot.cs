@@ -37,7 +37,7 @@ namespace DriveApp.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("SharedItemId")
+                    b.Property<int>("FileId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
@@ -45,7 +45,7 @@ namespace DriveApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SharedItemId");
+                    b.HasIndex("FileId");
 
                     b.HasIndex("UserId");
 
@@ -56,32 +56,32 @@ namespace DriveApp.Data.Migrations
                         {
                             Id = 1,
                             Content = "Hello aswell!!",
-                            CreatedAt = new DateTime(2024, 12, 10, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2552),
-                            SharedItemId = 1,
+                            CreatedAt = new DateTime(2024, 12, 23, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(8046),
+                            FileId = 12,
                             UserId = 2
                         },
                         new
                         {
                             Id = 2,
                             Content = "Nice project!",
-                            CreatedAt = new DateTime(2024, 12, 12, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2563),
-                            SharedItemId = 2,
+                            CreatedAt = new DateTime(2024, 12, 25, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(8055),
+                            FileId = 17,
                             UserId = 2
                         },
                         new
                         {
                             Id = 3,
                             Content = "Amazing project!",
-                            CreatedAt = new DateTime(2024, 12, 15, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2564),
-                            SharedItemId = 2,
+                            CreatedAt = new DateTime(2024, 12, 28, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(8057),
+                            FileId = 17,
                             UserId = 3
                         },
                         new
                         {
                             Id = 4,
                             Content = "Really interesting diary!",
-                            CreatedAt = new DateTime(2024, 12, 13, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2566),
-                            SharedItemId = 3,
+                            CreatedAt = new DateTime(2024, 12, 26, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(8058),
+                            FileId = 23,
                             UserId = 1
                         });
                 });
@@ -250,7 +250,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 12,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2470),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7961),
                             Name = "Hello.txt",
                             OwnerId = 1,
                             Content = "Hello world!"
@@ -258,7 +258,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 13,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2473),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7965),
                             Name = "Goodbye.txt",
                             OwnerId = 1,
                             Content = "Goodbye world!"
@@ -266,7 +266,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 14,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2474),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7966),
                             Name = "selfie.jpg",
                             OwnerId = 1,
                             ParentId = 2,
@@ -275,7 +275,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 15,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2476),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7968),
                             Name = "family.jpg",
                             OwnerId = 1,
                             ParentId = 5,
@@ -284,7 +284,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 16,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2477),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7969),
                             Name = "brothers.jpg",
                             OwnerId = 1,
                             ParentId = 5,
@@ -293,7 +293,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 17,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2479),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7971),
                             Name = "MarketplaceApp.html",
                             OwnerId = 1,
                             ParentId = 3,
@@ -302,7 +302,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 18,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2480),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7973),
                             Name = "MarketplaceApp.css",
                             OwnerId = 1,
                             ParentId = 3,
@@ -311,7 +311,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 19,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2482),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7974),
                             Name = "FitnessDBTables.sql",
                             OwnerId = 1,
                             ParentId = 4,
@@ -320,7 +320,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 20,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2483),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7975),
                             Name = "FitnessDBSeeds.sql",
                             OwnerId = 1,
                             ParentId = 4,
@@ -329,7 +329,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 21,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2485),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7977),
                             Name = "jokes.txt",
                             OwnerId = 2,
                             Content = "If the two chickens crossed the road..."
@@ -337,7 +337,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 22,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2486),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7978),
                             Name = "text.txt",
                             OwnerId = 2,
                             Content = "Lorem ipsum..."
@@ -345,7 +345,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 23,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2487),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7979),
                             Name = "document1.txt",
                             OwnerId = 2,
                             ParentId = 6,
@@ -354,7 +354,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 24,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2488),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7981),
                             Name = "document2.txt",
                             OwnerId = 2,
                             ParentId = 6,
@@ -363,7 +363,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 25,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2489),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7982),
                             Name = "download1.txt",
                             OwnerId = 2,
                             ParentId = 7,
@@ -372,7 +372,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 26,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2490),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7983),
                             Name = "download2.png",
                             OwnerId = 2,
                             ParentId = 7,
@@ -381,7 +381,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 27,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2491),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7984),
                             Name = "geometry.pptx",
                             OwnerId = 2,
                             ParentId = 10,
@@ -390,7 +390,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 28,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2493),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7985),
                             Name = "numbers.docx",
                             OwnerId = 2,
                             ParentId = 10,
@@ -399,7 +399,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 29,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2495),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7988),
                             Name = "operations.pdf",
                             OwnerId = 2,
                             ParentId = 10,
@@ -408,7 +408,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 30,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2496),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7989),
                             Name = "randomFile.txt",
                             OwnerId = 3,
                             Content = "This is a random file."
@@ -416,7 +416,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 31,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2497),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7990),
                             Name = "song1.mp3",
                             OwnerId = 3,
                             ParentId = 11,
@@ -425,7 +425,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 32,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2498),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7991),
                             Name = "song2.mp3",
                             OwnerId = 3,
                             ParentId = 11,
@@ -443,21 +443,21 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 1,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2414),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7904),
                             Name = "Projects",
                             OwnerId = 1
                         },
                         new
                         {
                             Id = 2,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2417),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7908),
                             Name = "Photos",
                             OwnerId = 1
                         },
                         new
                         {
                             Id = 3,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2419),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7910),
                             Name = "MarketplaceApp Project",
                             OwnerId = 1,
                             ParentId = 1
@@ -465,7 +465,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 4,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2421),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7911),
                             Name = "FitnessDB Project",
                             OwnerId = 1,
                             ParentId = 1
@@ -473,7 +473,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 5,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2422),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7913),
                             Name = "Family photos",
                             OwnerId = 1,
                             ParentId = 2
@@ -481,28 +481,28 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 6,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2425),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7916),
                             Name = "Documents",
                             OwnerId = 2
                         },
                         new
                         {
                             Id = 7,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2426),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7917),
                             Name = "Downloads",
                             OwnerId = 2
                         },
                         new
                         {
                             Id = 8,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2428),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7918),
                             Name = "School",
                             OwnerId = 2
                         },
                         new
                         {
                             Id = 9,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2435),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7920),
                             Name = "English",
                             OwnerId = 2,
                             ParentId = 8
@@ -510,7 +510,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 10,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2437),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7922),
                             Name = "Maths",
                             OwnerId = 2,
                             ParentId = 8
@@ -518,7 +518,7 @@ namespace DriveApp.Data.Migrations
                         new
                         {
                             Id = 11,
-                            LastChanged = new DateTime(2024, 12, 20, 17, 58, 45, 704, DateTimeKind.Utc).AddTicks(2438),
+                            LastChanged = new DateTime(2025, 1, 2, 16, 16, 4, 551, DateTimeKind.Utc).AddTicks(7923),
                             Name = "Music",
                             OwnerId = 3
                         });
@@ -526,9 +526,9 @@ namespace DriveApp.Data.Migrations
 
             modelBuilder.Entity("DriveApp.Data.Entities.Models.Comment", b =>
                 {
-                    b.HasOne("DriveApp.Data.Entities.Models.SharedItem", "SharedItem")
+                    b.HasOne("DriveApp.Data.Entities.Models.File", "File")
                         .WithMany("Comments")
-                        .HasForeignKey("SharedItemId")
+                        .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -538,9 +538,9 @@ namespace DriveApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("File");
 
-                    b.Navigation("SharedItem");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("DriveApp.Data.Entities.Models.Item", b =>
@@ -583,11 +583,6 @@ namespace DriveApp.Data.Migrations
                     b.Navigation("SharedItems");
                 });
 
-            modelBuilder.Entity("DriveApp.Data.Entities.Models.SharedItem", b =>
-                {
-                    b.Navigation("Comments");
-                });
-
             modelBuilder.Entity("DriveApp.Data.Entities.Models.User", b =>
                 {
                     b.Navigation("Comments");
@@ -595,6 +590,11 @@ namespace DriveApp.Data.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("SharedItems");
+                });
+
+            modelBuilder.Entity("DriveApp.Data.Entities.Models.File", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("DriveApp.Data.Entities.Models.Folder", b =>

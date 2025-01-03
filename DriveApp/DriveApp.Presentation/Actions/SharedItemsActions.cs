@@ -25,17 +25,13 @@ namespace DriveApp.Presentation.Actions
             _sharedItemRepository = RepositoryFactory.Create<SharedItemRepository>();
         }
 
-        public void CurrentLocation(int userId, int? parentId)
+        public void RootLocation(int userId)
         {
             var user = _userRepository.GetById(userId);
 
-            var sharedFolders = parentId is null?
-                                    _sharedItemRepository.GetSharedFolders(userId): 
-                                    _folderRepository.GetFolders(userId, parentId);
-            var sharedFiles = parentId is null? 
-                                _sharedItemRepository.GetSharedFiles(userId): 
-                                _fileRepository.GetFiles(userId,parentId);
-            
+            var sharedFolders = _sharedItemRepository.GetSharedFolders(userId);
+            var sharedFiles = _sharedItemRepository.GetSharedFiles(userId);
+
             Console.WriteLine($"{user.FirstName} {user.LastName} => DIJELJENO SA MNOM\n");
 
             if (sharedFolders.Count > 0)
@@ -111,6 +107,44 @@ namespace DriveApp.Presentation.Actions
 
             CurrentLocation(userId, parentId); */
             return;
+        }
+
+        public void CurrentLocation(int userId, int parentId)
+        {
+            var user = _userRepository.GetById(userId);
+
+            var sharedFolders = _folderRepository.GetFolders(parentId);
+            var sharedFiles = _fileRepository.GetFiles(parentId);
+
+            Console.WriteLine($"{user.FirstName} {user.LastName} => DIJELJENO SA MNOM\n");
+
+            if (sharedFolders.Count > 0)
+            {
+                Console.WriteLine("Mape:");
+
+                foreach (var folder in sharedFolders)
+                {
+                    Console.WriteLine("  - " + folder.Name);
+                }
+            }
+            else
+                Console.WriteLine("Mape: nema mapa");
+
+            if (sharedFiles.Count > 0)
+            {
+                Console.WriteLine("Datoteke:");
+
+                foreach (var file in sharedFiles)
+                {
+                    Console.WriteLine("  - " + file.Name);
+                }
+            }
+            else
+                Console.WriteLine("Datoteke: nema datoteka");
+
+
+            Console.Write("\nUnesite komandu ('pomoc' za ispis svih komandi): ");
+            var commandInput = Console.ReadLine();
         }
     }
 }

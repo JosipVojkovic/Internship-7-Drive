@@ -55,9 +55,9 @@ namespace DriveApp.Data.Entities
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
-                .HasOne(c => c.SharedItem)
+                .HasOne(c => c.File)
                 .WithMany(i => i.Comments)
-                .HasForeignKey(c => c.SharedItemId)
+                .HasForeignKey(c => c.FileId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Folder>()

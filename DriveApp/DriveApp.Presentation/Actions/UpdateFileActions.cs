@@ -26,7 +26,7 @@ namespace DriveApp.Presentation.Actions
             {UpdateFileCommands.Back, (":povratak", "povratak na prijasnji korak")},
         };
 
-        public void Help(int userId, int? parentId)
+        public void Help()
         {
             Console.WriteLine($"Uredivanje datoteke komande (ne ukljucujuci : na kraju komande):");
 
@@ -36,7 +36,7 @@ namespace DriveApp.Presentation.Actions
             if (!isValid)
             {
                 Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
-                Help(userId, parentId);
+                Help();
                 return;
             }
             return;

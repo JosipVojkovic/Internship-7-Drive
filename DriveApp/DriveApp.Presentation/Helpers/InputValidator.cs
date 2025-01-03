@@ -81,5 +81,15 @@ namespace DriveApp.Presentation.Helpers
 
             return input;
         }
+
+        public static int IsNumberValidation(string input)
+        {
+            if (int.TryParse(input, out int result))
+            {
+                return result;
+            }
+
+            return -1;
+        }
     }
 }

@@ -79,6 +79,12 @@ namespace DriveApp.Domain.Repositories
             return sharedFiles;
         }
 
+        public SharedItem? GetItem(int itemId, int userId)
+        {
+            var sharedItem = DbContext.SharedItems.FirstOrDefault(si => si.ItemId == itemId && si.OwnerId == userId);
+
+            return sharedItem;
+        }
     }
 
 }

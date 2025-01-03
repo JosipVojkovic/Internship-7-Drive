@@ -67,5 +67,13 @@ namespace DriveApp.Domain.Repositories
                 .OrderBy(f => f.Name)
                 .ToList();
         }
+
+        public ICollection<Folder> GetFolders(int parentId)
+        {
+            return DbContext.Folders
+                .Where(f => f.ParentId == parentId)
+                .OrderBy(f => f.Name)
+                .ToList();
+        }
     }
 }

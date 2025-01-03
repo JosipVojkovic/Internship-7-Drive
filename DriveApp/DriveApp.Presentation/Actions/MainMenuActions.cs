@@ -172,7 +172,7 @@ namespace DriveApp.Presentation.Actions
                     return;
                 case Enums.UserMenu.SharedItems:
                     var sharedItemsActions = new SharedItemsActions();
-                    sharedItemsActions.CurrentLocation(userId, null);
+                    sharedItemsActions.RootLocation(userId);
                     return;
                 case Enums.UserMenu.ProfileSettings:
                     var profileSettingsActions = new ProfileSettingsActions();

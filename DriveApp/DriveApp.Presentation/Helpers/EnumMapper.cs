@@ -51,7 +51,7 @@ namespace DriveApp.Presentation.Helpers
             foreach (var item in dictionary)
             {
                 Console.WriteLine($"  {item.Value.Item1}:");
-                Console.WriteLine($"    - {item.Value.Item2}\n");
+                Console.WriteLine($"    - {item.Value.Item2}");
             }
 
             Console.Write("\nUnesite 0 za natrag: ");

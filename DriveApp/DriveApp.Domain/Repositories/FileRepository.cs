@@ -61,10 +61,24 @@ namespace DriveApp.Domain.Repositories
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
         }
 
+        public Data.Entities.Models.File? GetById(int fileId)
+        {
+            return DbContext.Files
+                .FirstOrDefault(f => f.Id == fileId);
+        }
+
         public ICollection<Data.Entities.Models.File> GetFiles(int userId, int? parentId)
         {
             return DbContext.Files
                 .Where(f => f.OwnerId == userId && f.ParentId == parentId)
+                .OrderBy(f => f.LastChanged)
+                .ToList();
+        }
+
+        public ICollection<Data.Entities.Models.File> GetFiles(int parentId)
+        {
+            return DbContext.Files
+                .Where(f => f.ParentId == parentId)
                 .OrderBy(f => f.LastChanged)
                 .ToList();
         }

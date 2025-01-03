@@ -15,9 +15,9 @@ namespace DriveApp.Domain.Repositories
         {
         }
 
-        public ResponseResultType Add(int sharedItemId, int userId, string content)
+        public ResponseResultType Add(int fileId, int userId, string content)
         {
-            var newComment = new Comment(sharedItemId, userId, content);
+            var newComment = new Comment(fileId, userId, content);
             DbContext.Comments.Add(newComment);
 
             return SaveChanges();
@@ -26,6 +26,18 @@ namespace DriveApp.Domain.Repositories
         public ResponseResultType Delete(int commentId)
         {
             var comment = DbContext.Comments.FirstOrDefault(c => c.Id == commentId);
+
+            if (comment is null)
+                return ResponseResultType.NotFound;
+
+            DbContext.Comments.Remove(comment);
+
+            return SaveChanges();
+        }
+
+        public ResponseResultType Delete(int fileId, int commentId)
+        {
+            var comment = DbContext.Comments.FirstOrDefault(c => c.Id == commentId && c.FileId == fileId);
 
             if (comment is null)
                 return ResponseResultType.NotFound;
@@ -52,9 +64,14 @@ namespace DriveApp.Domain.Repositories
             return DbContext.Comments.FirstOrDefault(c => c.Id == commentId);    
         }
 
-        public ICollection<Comment> GetComments(int sharedItemId)
+        public Comment? GetComment(int fileId, int commentId)
         {
-            return DbContext.Comments.Where(c => c.SharedItemId == sharedItemId).ToList();
+            return DbContext.Comments.FirstOrDefault(c => c.Id == commentId && c.FileId == fileId);
+        }
+
+        public ICollection<Comment> GetComments(int fileId)
+        {
+            return DbContext.Comments.Where(c => c.FileId == fileId).ToList();
         }
     }
 }
