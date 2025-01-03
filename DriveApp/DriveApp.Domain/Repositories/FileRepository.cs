@@ -75,12 +75,19 @@ namespace DriveApp.Domain.Repositories
                 .ToList();
         }
 
-        public ICollection<Data.Entities.Models.File> GetFiles(int parentId)
+        public ICollection<Data.Entities.Models.File> GetFiles(int? parentId)
         {
             return DbContext.Files
                 .Where(f => f.ParentId == parentId)
                 .OrderBy(f => f.LastChanged)
                 .ToList();
+        }
+
+        public bool isFile(int id)
+        {
+            var file = DbContext.Files.Find(id);
+
+            return file is null? false: true;
         }
     }
 }

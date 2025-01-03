@@ -68,7 +68,7 @@ namespace DriveApp.Domain.Repositories
                 .ToList();
         }
 
-        public ICollection<Folder> GetFolders(int parentId)
+        public ICollection<Folder> GetFolders(int? parentId)
         {
             return DbContext.Folders
                 .Where(f => f.ParentId == parentId)

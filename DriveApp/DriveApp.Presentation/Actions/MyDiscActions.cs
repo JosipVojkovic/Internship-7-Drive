@@ -16,6 +16,7 @@ namespace DriveApp.Presentation.Actions
     public class MyDiscActions
     {
         private readonly UserRepository _userRepository;
+        private readonly ItemRepository _itemRepository;
         private readonly FolderRepository _folderRepository;
         private readonly FileRepository _fileRepository;
         private readonly SharedItemRepository _sharedItemRepository;
@@ -23,6 +24,7 @@ namespace DriveApp.Presentation.Actions
         public MyDiscActions()
         {
             _userRepository = RepositoryFactory.Create<UserRepository>();
+            _itemRepository = RepositoryFactory.Create<ItemRepository>();
             _folderRepository = RepositoryFactory.Create<FolderRepository>();
             _fileRepository = RepositoryFactory.Create<FileRepository>();
             _sharedItemRepository = RepositoryFactory.Create<SharedItemRepository>();
@@ -97,8 +99,7 @@ namespace DriveApp.Presentation.Actions
         public void CurrentLocation(int userId, int? parentId)
         {
             var user = _userRepository.GetById(userId);
-            var folders = _folderRepository.GetFolders(userId, parentId);
-            var files = _fileRepository.GetFiles(userId, parentId);
+            _itemRepository.GetItems(userId, parentId, out var folders, out var files);
             Console.WriteLine($"{user.FirstName} {user.LastName} => MOJ DISK\n");
 
             
@@ -142,7 +143,7 @@ namespace DriveApp.Presentation.Actions
             switch (command.Value.Key)
             {
                 case MyDiscCommands.Help:
-                    Help();
+                    Help(Commands);
                     break;
                 case MyDiscCommands.CreateFolder:
                     CreateFolder(userId, parentId, command.Value.Value[0]);
@@ -192,7 +193,7 @@ namespace DriveApp.Presentation.Actions
             return;
         }
 
-        public void Help()
+        public void Help<TEnum>(Dictionary<TEnum, (string, string)> commands) where TEnum : Enum
         {
             Console.WriteLine($"Moj disk komande (ne ukljucujuci :):");
 
@@ -202,7 +203,7 @@ namespace DriveApp.Presentation.Actions
             if (!isValid)
             {
                 Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
-                Help();
+                Help(commands);
                 return;
             }
             return;

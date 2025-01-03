@@ -14,5 +14,27 @@ namespace DriveApp.Domain.Repositories
         public ItemRepository(DriveAppDbContext dbContext) : base(dbContext) 
         {
         }
+        public Item? GetById(int itemId)
+        {
+            return DbContext.Items
+                .FirstOrDefault(i => i.Id == itemId);
+        }
+
+        public void GetItems(int userId, int? parentId, out List<Folder> folders, out List<Data.Entities.Models.File> files)
+        {
+            var items = DbContext.Items
+                .Where(i => i.OwnerId == userId && i.ParentId == parentId)
+                .ToList();
+
+            folders = items
+                .OfType<Folder>()
+                .OrderBy(f => f.Name)
+                .ToList();
+
+            files = items
+                .OfType<Data.Entities.Models.File>()
+                .OrderBy(f => f.LastChanged)
+                .ToList();
+        }
     }
 }
