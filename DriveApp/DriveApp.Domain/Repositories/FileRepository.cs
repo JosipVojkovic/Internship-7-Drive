@@ -61,6 +61,12 @@ namespace DriveApp.Domain.Repositories
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
         }
 
+        public Data.Entities.Models.File? GetFile(string name, int? parentId)
+        {
+            return DbContext.Files
+                .FirstOrDefault(f => f.Name == name && f.ParentId == parentId);
+        }
+
         public Data.Entities.Models.File? GetById(int fileId)
         {
             return DbContext.Files

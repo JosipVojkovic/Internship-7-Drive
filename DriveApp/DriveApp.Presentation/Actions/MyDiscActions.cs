@@ -330,7 +330,6 @@ namespace DriveApp.Presentation.Actions
                     break;
             }
 
-            CurrentLocation(userId, parentId);
             return;
         }
 

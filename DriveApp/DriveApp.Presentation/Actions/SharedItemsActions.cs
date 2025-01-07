@@ -1,4 +1,5 @@
 ﻿using DriveApp.Data.Entities.Models;
+using DriveApp.Domain.Enums;
 using DriveApp.Domain.Factories;
 using DriveApp.Domain.Repositories;
 using DriveApp.Presentation.Enums;
@@ -8,13 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DriveApp.Presentation.Actions
 {
     public class SharedItemsActions
     {
         private readonly UserRepository _userRepository;
-        private readonly ItemRepository _itemRepository;
         private readonly FolderRepository _folderRepository;
         private readonly FileRepository _fileRepository;
         private readonly SharedItemRepository _sharedItemRepository;
@@ -22,7 +23,6 @@ namespace DriveApp.Presentation.Actions
         public SharedItemsActions()
         {
             _userRepository = RepositoryFactory.Create<UserRepository>();
-            _itemRepository = RepositoryFactory.Create<ItemRepository>();
             _folderRepository = RepositoryFactory.Create<FolderRepository>();
             _fileRepository = RepositoryFactory.Create<FileRepository>();
             _sharedItemRepository = RepositoryFactory.Create<SharedItemRepository>();
@@ -63,9 +63,9 @@ namespace DriveApp.Presentation.Actions
             {
                 Console.WriteLine("Mape ([id - ime - email vlasnika]):");
 
-                foreach (var folder in sharedFolders)
+                foreach (var sharedFolder in sharedFolders)
                 {
-                    Console.WriteLine($"  - [{folder.Id} - {folder.Name} - {_userRepository.GetById(folder.OwnerId).Email}]");
+                    Console.WriteLine($"  - [{sharedFolder.Id} - {sharedFolder.Name} - {_userRepository.GetById(sharedFolder.OwnerId).Email}]");
                 }
             }
             else
@@ -75,9 +75,9 @@ namespace DriveApp.Presentation.Actions
             {
                 Console.WriteLine("Datoteke ([id - ime - email vlasnika]):");
 
-                foreach (var file in sharedFiles)
+                foreach (var sharedFile in sharedFiles)
                 {
-                    Console.WriteLine($"  - [{file.Id} - {file.Name} - {_userRepository.GetById(file.OwnerId).Email}]");
+                    Console.WriteLine($"  - [{sharedFile.Id} - {sharedFile.Name} - {_userRepository.GetById(sharedFile.OwnerId).Email}]");
                 }
             }
             else
@@ -101,24 +101,61 @@ namespace DriveApp.Presentation.Actions
             switch (command.Value.Key)
             {
                 case SharedItemsCommands.Help:
-                    myDiscActions.Help(Commands);
+                    Help(Commands);
                     break;
                 case SharedItemsCommands.EnterFolder:
                     var folder = sharedFolders.FirstOrDefault(f => f.Name == command.Value.Value[0]);
-                    EnterFolder(folder.OwnerId, folder.ParentId, command.Value.Value[0]);
+                    if (folder is null)
+                    {
+                        Console.WriteLine($"Operacija neuspjesna. Mapa {command.Value.Value[0]} ne postoji na trenutnoj lokaciji.\n");
+                        RootLocation(userId);
+                        return;
+                    }
+                    EnterFolder(userId, folder.OwnerId, folder.ParentId, command.Value.Value[0]);
+                    return;
+                case SharedItemsCommands.EnterFile:
+                    var file = sharedFiles.FirstOrDefault(f => f.Name == command.Value.Value[0]);
+                    if (file is null)
+                    {
+                        Console.WriteLine($"Operacija neuspjesna. Datoteka {command.Value.Value[0]} ne postoji na trenutnoj lokaciji.\n");
+                        RootLocation(userId);
+                        return;
+                    }
+                    EnterFile(userId, file.OwnerId, file?.ParentId, command.Value.Value[0]);
                     return;
                 case SharedItemsCommands.EditFile:
-                    var file = sharedFolders.FirstOrDefault(f => f.Name == command.Value.Value[0]);
-                    myDiscActions.EditFile(file.OwnerId, file.ParentId, command.Value.Value[0]);
+                    var file1 = sharedFiles.FirstOrDefault(f => f.Name == command.Value.Value[0]);
+                    if (file1 is null)
+                    {
+                        Console.WriteLine($"Operacija neuspjesna. Datoteka {command.Value.Value[0]} ne postoji na trenutnoj lokaciji.\n");
+                        RootLocation(userId);
+                        return;
+                    }
+                    myDiscActions.EditFile(file1.OwnerId, file1.ParentId, command.Value.Value[0]);
                     break;
                 case SharedItemsCommands.DeleteFolder:
-                    //DeleteFolder(userId, parentId, command.Value.Value[0]);
+                    var folder1 = sharedFolders.FirstOrDefault(f => f.Name == command.Value.Value[0]);
+                    if (folder1 is null)
+                    {
+                        Console.WriteLine($"Operacija neuspjesna. Mapa {command.Value.Value[0]} ne postoji na trenutnoj lokaciji.\n");
+                        RootLocation(userId);
+                        return;
+                    }
+                    DeleteFolder(userId, folder1.ParentId, command.Value.Value[0]);
                     break;
                 case SharedItemsCommands.DeleteFile:
-                    //DeleteFile(userId, parentId, command.Value.Value[0]);
+                    var file2 = sharedFiles.FirstOrDefault(f => f.Name == command.Value.Value[0]);
+                    if (file2 is null)
+                    {
+                        Console.WriteLine($"Operacija neuspjesna. Datoteka {command.Value.Value[0]} ne postoji na trenutnoj lokaciji.\n");
+                        RootLocation(userId);
+                        return;
+                    }
+                    DeleteFile(userId, file2.ParentId, command.Value.Value[0]);
                     break;
                 case SharedItemsCommands.Back:
-                    //Back(userId, parentId);
+                    var mainMenuActions = new MainMenuActions();
+                    mainMenuActions.UserMenu(userId);
                     return;
             }
 
@@ -126,12 +163,28 @@ namespace DriveApp.Presentation.Actions
             return;
         }
 
-        public void CurrentLocation(int userId, int? parentId)
+        public void CurrentLocation(int sharedUserId, int userId, int? parentId)
         {
-            var user = _userRepository.GetById(userId);
+            var user = _userRepository.GetById(sharedUserId);
 
-            var sharedFolders = _folderRepository.GetFolders(parentId);
-            var sharedFiles = _fileRepository.GetFiles(parentId);
+            var allSharedFolderIds = _sharedItemRepository
+                                        .GetSharedFolders(sharedUserId)
+                                        .Select(f => f.Id)
+                                        .ToHashSet();
+            var allSharedFileIds = _sharedItemRepository
+                                        .GetSharedFiles(sharedUserId)
+                                        .Select(f => f.Id)
+                                        .ToHashSet();
+
+            var sharedFolders = _folderRepository
+                .GetFolders(parentId)
+                .Where(f => allSharedFolderIds.Contains(f.Id))
+                .ToList();
+
+            var sharedFiles = _fileRepository
+                .GetFiles(parentId)
+                .Where(f => allSharedFileIds.Contains(f.Id))
+                .ToList();
 
             Console.WriteLine($"{user.FirstName} {user.LastName} => DIJELJENO SA MNOM\n");
 
@@ -162,31 +215,90 @@ namespace DriveApp.Presentation.Actions
 
             Console.Write("\nUnesite komandu ('pomoc' za ispis svih komandi): ");
             var commandInput = Console.ReadLine();
+            var command = CommandsValidator.ValidateCommand(Commands, commandInput);
+            Console.Clear();
+
+            if (command is null)
+            {
+                Console.WriteLine("Pogresan unos komande. Pokusajte ponovno.\n");
+                CurrentLocation(sharedUserId, userId, parentId);
+                return;
+            }
+
+            switch (command.Value.Key)
+            {
+                case SharedItemsCommands.Help:
+                    Help(Commands);
+                    break;
+                case SharedItemsCommands.EnterFolder:
+                    EnterFolder(sharedUserId, userId, parentId, command.Value.Value[0]);
+                    return;
+                case SharedItemsCommands.EnterFile:
+                    EnterFile(sharedUserId, userId, parentId, command.Value.Value[0]);
+                    return;
+                case SharedItemsCommands.EditFile:
+                    var myDiscActions = new MyDiscActions();
+                    myDiscActions.EditFile(userId, parentId, command.Value.Value[0]);
+                    break;
+                case SharedItemsCommands.DeleteFolder:
+                    DeleteFolder(sharedUserId, parentId, command.Value.Value[0]);
+                    break;
+                case SharedItemsCommands.DeleteFile:
+                    DeleteFile(sharedUserId, parentId, command.Value.Value[0]);
+                    break;
+                case SharedItemsCommands.Back:
+                    Back(sharedUserId, userId, parentId);
+                    return;
+            }
+
+            CurrentLocation(sharedUserId, userId, parentId);
         }
 
-        public void EnterFolder(int userId, int? parentId, string name)
+        public void Help<TEnum>(Dictionary<TEnum, (string, string)> commands) where TEnum : Enum
         {
-            var folder = _folderRepository.GetFolder(name, parentId, userId);
+            Console.WriteLine($"Moj disk komande (ne ukljucujuci :):");
+
+            var isValid = EnumMapper.MapCommands(Commands);
+            Console.Clear();
+
+            if (!isValid)
+            {
+                Console.WriteLine("Pogresan unos. Pokusajte ponovno.\n");
+                Help(commands);
+                return;
+            }
+            return;
+        }
+
+        public void EnterFolder(int sharedUserId, int userId, int? parentId, string name)
+        {
+            var folder = _folderRepository.GetFolder(name, parentId);
 
             if (folder is null)
             {
                 Console.WriteLine($"Operacija neuspjesna. Mapa {name} ne postoji na trenutnoj lokaciji.\n");
-                CurrentLocation(userId, parentId);
+                CurrentLocation(sharedUserId, userId, parentId);
             }
             else
-                CurrentLocation(userId, folder.Id);
+                CurrentLocation(sharedUserId, userId, folder.Id);
 
             return;
         }
 
-        public void EnterFile(int userId, int? parentId, string name, int sharedUserId)
+        public void EnterFile(int sharedUserId, int userId, int? parentId, string name)
         {
-            var file = _fileRepository.GetFile(name, parentId, userId);
+            var file = _fileRepository.GetFile(name, parentId);
+            _sharedItemRepository.GetRootSharedItems(sharedUserId, out var folders, out var files);
 
             if (file is null)
             {
                 Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji na trenutnoj lokaciji.\n");
-                CurrentLocation(userId, parentId);
+                if (folders.Any(f => f.Id == parentId))
+                {
+                    RootLocation(sharedUserId);
+                    return;
+                }
+                CurrentLocation(sharedUserId, userId, parentId);
                 return;
             }
 
@@ -206,66 +318,84 @@ namespace DriveApp.Presentation.Actions
             }
             else if (commandInput == "povratak")
             {
-                if (_sharedItemRepository.GetSharedItem(sharedUserId, file.Id) is null)
+                if (folders.Any(f => f.Id == parentId))
                 {
-                    CurrentLocation(userId, parentId);
+                    RootLocation(sharedUserId);
                     return;
                 }
 
+                CurrentLocation(sharedUserId, userId, parentId);
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Pogresan unos komande. Pokusajte ponovno.\n");
+            }
+
+            EnterFile(sharedUserId, userId, parentId, name);
+            return;
+        }
+
+        public void DeleteFolder(int sharedUserId, int? parentId, string name)
+        {
+            var actionConfirmation = EnumMapper.ConfirmDialog();
+
+            if (actionConfirmation)
+            {
+                var folder = _folderRepository.GetFolder(name, parentId);
+                var sharedFolder = _sharedItemRepository.GetSharedItem(sharedUserId, folder.Id);
+                var response = _sharedItemRepository.Delete(sharedFolder.Id, sharedFolder.OwnerId, sharedUserId);
+
+                if (response == ResponseResultType.NotFound)
+                    Console.WriteLine($"Operacija neuspjesna. Mapa {name} ne postoji.\n");
+                else
+                    Console.WriteLine($"Mapa {name} uspjesno obrisana!\n");
+            }
+
+            return;
+        }
+
+        public void DeleteFile(int sharedUserId, int? parentId, string name)
+        {
+            var actionConfirmation = EnumMapper.ConfirmDialog();
+
+            if (actionConfirmation)
+            {
+                var file = _fileRepository.GetFile(name, parentId);
+                var sharedFile = _sharedItemRepository.GetSharedItem(sharedUserId, file.Id);
+                var response = _sharedItemRepository.Delete(sharedFile.Id, sharedFile.OwnerId, sharedUserId);
+
+                if (response == ResponseResultType.NotFound)
+                    Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji.\n");
+                else
+                    Console.WriteLine($"Datoteka {name} uspjesno obrisana!\n");
+            }
+
+            return;
+        }
+
+        public void Back(int sharedUserId, int userId, int? parentId)
+        {
+            Console.Clear();
+
+            var folder = _folderRepository.GetById(parentId);
+            _sharedItemRepository.GetRootSharedItems(sharedUserId, out var folders, out var files);
+
+            if (folder is null)
+            {
+                Console.WriteLine("Dogodila se greska. Pokusajte ponovno.\n");
                 RootLocation(sharedUserId);
                 return;
             }
-            else
+
+            if (folders.Any(f => f.Id == parentId))
             {
-                Console.WriteLine("Pogresan unos komande. Pokusajte ponovno.\n");
-            }
-
-            EnterFile(userId, parentId, name, sharedUserId);
-            return;
-        }
-
-        public void EnterFile(int userId, int? parentId, string name)
-        {
-            var file = _fileRepository.GetFile(name, parentId, userId);
-
-            if (file is null)
-            {
-                Console.WriteLine($"Operacija neuspjesna. Datoteka {name} ne postoji na trenutnoj lokaciji.\n");
-                CurrentLocation(userId, parentId);
+                RootLocation(sharedUserId);
                 return;
             }
 
-            Console.WriteLine($"Ime datoteka: {file.Name}\n\nSadrzaj datoteke:\n{file.Content}\n");
-            Console.Write("Unesite komandu ('pomoc' za ispis svih komandi): ");
-            var commandInput = Console.ReadLine();
-            var enterFileActions = new EnterFileActions();
-            Console.Clear();
-
-            if (commandInput == "pomoc")
-            {
-                enterFileActions.Help(enterFileActions.Commands);
-            }
-            else if (commandInput == "otvori komentare")
-            {
-                enterFileActions.ShowComments(userId, file.Id);
-            }
-            else if (commandInput == "povratak")
-            {
-                CurrentLocation(userId, parentId);
-                return;
-            }
-            else
-            {
-                Console.WriteLine("Pogresan unos komande. Pokusajte ponovno.\n");
-            }
-
-            EnterFile(userId, parentId, name);
+            CurrentLocation(sharedUserId, userId, folder.ParentId);
             return;
-        }
-
-        public void Back()
-        {
-
         }
     }
 }

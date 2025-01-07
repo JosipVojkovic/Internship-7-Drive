@@ -54,6 +54,12 @@ namespace DriveApp.Domain.Repositories
                 .FirstOrDefault(f => f.Name == name && f.ParentId == parentId && f.OwnerId == ownerId);
         }
 
+        public Folder? GetFolder(string name, int? parentId)
+        {
+            return DbContext.Folders
+                .FirstOrDefault(f => f.Name == name && f.ParentId == parentId);
+        }
+
         public Folder? GetById(int? id)
         {
             return DbContext.Folders

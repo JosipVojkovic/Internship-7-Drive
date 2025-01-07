@@ -68,7 +68,7 @@ namespace DriveApp.Presentation.Actions
                 Console.WriteLine("Komentari (id - email - datum):\n");
                 foreach (var comment in comments)
                 {
-                    Console.WriteLine($"{comment.Id} - {_userRepository.GetById(comment.UserId)} - {comment.CreatedAt}");
+                    Console.WriteLine($"{comment.Id} - {_userRepository.GetById(comment.UserId).Email} - {comment.CreatedAt}");
                     Console.WriteLine($"Sadrzaj komentara: {comment.Content}\n");
                 }
             }
